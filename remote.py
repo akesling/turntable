@@ -15,14 +15,26 @@ def _unimplemented(name):
 ## Remote element-set manipulation #############################################
 ###############################################################################
 
-def retrieve(key, value, tag, hsh=False):
+def retrieve(key):
+    """
+    Retrieve element value from remote node
+    """
     _unimplemented(__name__)
 
-def store(key, value, tag, hsh=False):
+def store(key, value, tag):
+    """
+    Store element in remote node
+    """
     _unimplemented(__name__)
 
-def delete(key, hsh=False):
+def delete(key):
+    """
+    Delete element from remote node
+    """
     _unimplemented(__name__)
 
-def retag(key, tag, hsh=False):
+def retag(key, tag):
+    """
+    Retag element remote node
+    """
     _unimplemented(__name__)
