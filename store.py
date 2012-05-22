@@ -42,6 +42,28 @@ def retag(key, tag, hsh=False):
 ## Routing table management ###################################################
 ###############################################################################
 
+## Self #######################################################################
+
+def get_self():
+    """
+    Get the index and address of this node
+    """
+    _unimplemented(__name__)
+
+def set_self(index, address):
+    """
+    Set index and address of this node in the routing table
+    """
+    _unimplemented(__name__)
+
+def get_neighbors(index):
+    """
+    Get the index and address of current neighbors
+    """
+    _unimplemented(__name__)
+
+## General Table ##############################################################
+
 def find_route(key, partition=0, hsh=False):
     """
     Look up routing index by key/hash
