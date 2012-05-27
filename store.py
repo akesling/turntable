@@ -2,13 +2,12 @@
 DB Wrapper so the HT can be blissfully ignorant of the storage layer.
 """
 import keys
+from errors import *
 
 ###############################################################################
 ## Helper functions/utilities #################################################
 ###############################################################################
 
-def _unimplemented(name):
-    raise Exception("%s has yet to be implemented." % name)
 
 ###############################################################################
 ## Local element-set manipulation #############################################

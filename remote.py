@@ -3,13 +3,12 @@ Wrapper for communication with other nodes in the table
 """
 import keys
 import router
+from errors import *
 
 ###############################################################################
 ## Helper functions/utilities #################################################
 ###############################################################################
 
-def _unimplemented(name):
-    raise Exception("%s has yet to be implemented." % name)
 
 ###############################################################################
 ## Remote element-set manipulation #############################################
