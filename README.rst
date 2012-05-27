@@ -20,3 +20,30 @@ segmented node-network with n partitions.
 - Thus the only times when an element is deleted are upon node insertion or an explicit delete call.
 
 - Because of the partitioning scheme, insertion/deletion must be distributed around the ring in an even fashion to provide maximal dispersion (try to have the greatest homogeneity for total quantity of elements per node).
+
+- To prevent multi-insertion issues, require node to update "inserter" upon completing each initialization phase.
+
+- Considering the inherently single-core design of TurnTable, allow multiple nodes to run from the same hose.
+    - This implies that a node should be able to "insert" a node on the same host by effectively forking
+    - Allow node to run in non-storage mode.  Then each server can run a non-storage node independently of the ring which a potentially current routing table. Allowing "passive" nodes to be "insertion-brokers".
+
+- At some point "effective replicants" should be a TurnTable param. E.G. one should be able to choose the number of copies a given element-set should have.
+
+- Potentially have replicants be an element level parameter?  This would allow for prioritizing some data as more durable/important (increasing fault tolerance for those subsets without decreases general replicant performance)
+
+- To further decrease issues with the "multi-insertion" problem, only allow neighbor nodes to process insertion requests.  Thus all insertions are forwarded to the neighbors of the desired insertion location.  Original requester should be informed of node creation stages as they occur to put a set of checks on insertion.  This would allow for a failed insertion on the neighbor level to be caught by the original inserter.
+
+- Neighbors should also negotiate who will insert so that double insertion can't occur and an extra set of checks is built in for catching insertion failure.
+
+- Nodes could potentially have a facility to do an insertion locally if they are under high load.  There needs to be some way to restrict this such that the ring can't grow beyond certain configured restrictions.
+    - Maybe have an "open pool" count that decrements on insertion and is propagated like the routing table?
+
+- Insertion of a node must wait for prior insertions in that location to complete (both neighbors must be "current").
+
+- At some point, a pluggable backend store would be preferable.  Then on could swap in, say, PostgreSQL and link multiple local nodes to the same store (would likely increase local node performance) or link each node to a redis instance... there are a decent number of interesting things TurnTable could do with a pluggable backend.
+
+- Populating a newly inserted node should only require that node to pull data from replicants (instead of replicants pushing).  This requires some bulk GET facility w/ a robust mechanism of acquiring incremental partial results (pages).
+
+- Should a new node inform an "old" replicant upon successful insertion of a given element?  Maybe... though it would definitely increase traffic.
+
+- Upon receipt of GET for non-local data, node may ask any known replicants for than data (they don't have to GET from the core node for that element).
