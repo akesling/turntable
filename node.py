@@ -15,7 +15,7 @@ from errors import *
 
 def insert_self(address):
     """
-    Initialization upon first entering the table
+    Initialization upon first entering the ring
     """
     _unimplemented(__name__)
 
@@ -33,6 +33,6 @@ def dead_neighbor(index):
 
 def delete_self(left, right):
     """
-    Gracefully remove this node from the table
+    Gracefully remove this node from the ring
     """
     _unimplemented(__name__)
