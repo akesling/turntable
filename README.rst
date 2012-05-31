@@ -25,7 +25,7 @@ segmented node-network with n partitions.
 
 - Considering the inherently single-core design of TurnTable, allow multiple nodes to run from the same hose.
     - This implies that a node should be able to "insert" a node on the same host by effectively forking
-    - Allow node to run in non-storage mode.  Then each server can run a non-storage node independently of the ring which a potentially current routing table. Allowing "passive" nodes to be "insertion-brokers".
+    - Allow node to run in non-storage mode.  Then each server can run a non-storage node independently of the ring which has a potentially current routing table. Allowing "passive" nodes to be "insertion-brokers".
 
 - At some point "effective replicants" should be a TurnTable param. E.G. one should be able to choose the number of copies a given element-set should have.
 
