@@ -2,8 +2,7 @@ import hashlib
 from errors import *
 
 def hash_key(key, partitions=0, hasher=hashlib.sha512):
-    """
-    Take a string-valued key and return its hash.
+    """Take a string-valued key and return its hash.
 
     Args:
         key: value to be hashed
@@ -29,11 +28,10 @@ def hash_key(key, partitions=0, hasher=hashlib.sha512):
 
 
 def calc_index(partition, total_parts):
-    """
-    Calculate the generic index for a given partition
+    """Calculate the generic index for a given partition.
 
-    The index returned is not necessarily the index of any node in the ring
-    this means that further search will need to occur on a local basis to
+    The index returned is not necessarily the index of any node in the ring.
+    This means that further search will need to occur on a local basis to
     find which node actually contains the element (this is likely to occur in
     a large number of cases).
 
@@ -48,7 +46,8 @@ def calc_index(partition, total_parts):
             of nodes minus one) on the ring
 
     Returns:
-        index: the 2-tuple index representing the point along the unit circle
-            which should be close to the actual index of the element
+        (index) the 2-tuple index (first element numerator, second denomenator)
+        representing the point along the unit circle which should be close
+        to the actual index of the element.
     """
     _unimplemented(__name__)

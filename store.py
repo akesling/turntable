@@ -14,7 +14,7 @@ from errors import *
 ## Local element-set manipulation #############################################
 ###############################################################################
 
-class AbstractStore(object):
+class AbstractLocalStore(object):
     def retrieve(self, key, hsh=False):
         """Retrieve element value from local store
 
@@ -95,14 +95,14 @@ class AbstractStore(object):
          _unimplemented(__name__)
 
 
-class DictionaryStore(AbstractStore):
+class DictionaryStore(AbstractLocalStore):
     store = dict()
     store_lock = Lock()
 
     @staticmethod
     def dict_lock(function):
         def wrapper(args*, kwargs**):
-            with self.store_lock:
+            with store_lock:
                 return function(args*, kwargs**)
         return wrapper
 
@@ -144,7 +144,7 @@ class AbstractRoutingTable(object):
 
     def get_self(self):
         """
-        Get the index and address of this node
+        Get the index and address of this node.
         """
         _unimplemented(__name__)
 
@@ -152,10 +152,11 @@ class AbstractRoutingTable(object):
         """Set index and address of this node in the routing table.
 
         Args:
-            index:
-            address:
+            index: The index to set.
+            address: The routing address to store.
 
         Returns:
+            (bool) True if successful, False otherwise.
         """
         _unimplemented(__name__)
 
@@ -163,23 +164,27 @@ class AbstractRoutingTable(object):
         """Get the index and address of this node's current neighbors.
 
         Args:
-            index:
+            index: The index to set to find the neighbors of.
 
         Returns:
+            (2-tuple/bool) If the index exists in the table, return that
+            index's neighbors as (left, right), otherwise return None.
         """
         _unimplemented(__name__)
 
     ## General Table ##########################################################
 
-    def find_route(self, key, partition=0, hsh=False):
+    def find_route(self, key, partition=1, hsh=False):
         """Look up a routing index by key/hash.
 
         Args:
-            key: The key we are looking up. 
-            partition: 
-            hsh:
+            key: The key we are looking up.
+            partition: (long) The number of segments in the table.
+            hsh: (bool) Is the key passed in already hashed?
 
         Returns:
+            The routing address where this key is stored or None if this key
+            isn't stored in the table.
         """
         if not hsh:
             hsh, part = keys.get_hash(key, total_nodes())
@@ -198,9 +203,11 @@ class AbstractRoutingTable(object):
         being represented by such a fraction.
 
         Args:
-            index:
+            index: The index for a desired node.
 
         Returns:
+            The routing address for the given index or None if the node does
+            not exist.
         """
         _unimplemented(__name__)
 
@@ -208,21 +215,23 @@ class AbstractRoutingTable(object):
         """Set the given local routing index to the provided address.
 
         Args:
-            index:
-            address:
+            index: The index for the node to set.
+            address: The address to set for this node.
 
         Returns:
+            (bool) Whether the set operation succeeded.
         """
         _unimplemented(__name__)
 
-    def remove_route(self, index, address):
+    def remove_route(self, index):
         """Remove a route from the routing table.
 
         Args:
-            index:
-            address:
+            index: The index for the node to remove.
 
         Returns:
+            The address of the index removed if it existed, None if it didn't,
+            and False if the operation failed.
         """
         _unimplemented(__name__)
 
