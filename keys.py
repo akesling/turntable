@@ -7,8 +7,8 @@ def hash_key(key, partitions=0, hasher=hashlib.sha512):
 
     Args:
         key: value to be hashed
-        partitions: long, number of segments in hashtable
-        hasher: object, hash object fulfilling interface seen in hashlib
+        partitions: (long) number of segments in hashtable
+        hasher: (object) hash object fulfilling interface seen in hashlib
 
     Returns:
         2-Tuple of hash as hex-string and to which segment of the
@@ -23,7 +23,7 @@ def hash_key(key, partitions=0, hasher=hashlib.sha512):
 
     part = long(partitions)
     if part > 0:
-        return (val, int(val,16) % part)
+        return (val, int(val, 16) % part)
 
     return (val, part)
 

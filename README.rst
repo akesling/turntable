@@ -15,7 +15,7 @@ segmented node-network with n partitions.
 - Creation/insertion of a node creates a new partition once node is initialized.
     - An insertion of a node Q between A and B would result in A and B splitting their respective element-sets and "migrating" those portions to Q which it has now been allotted by the new partitioning scheme.  At the same time as this migration is occurring, A and B are sharing their core element-set with Q for replication.  NOTE that these are not mutually exclusive.  Q will end up storing _all_ data from the element sets of A and B, but some will be marked as Q's data and some marked as A's or B's. Thus, upon inserting a node, the entirety of A's and B's element sets may be transmitted to Q with "migration marking" occurring either before or after transmission (it should also be noted that all three nodes must be aware of who "owns" a given element after insertion is complete).
 
-- Upon node deletion/failure, its element-set is divvied up and merged into its neighbors core element-sets.  When deletion/failure occurs, the neighbors must also share their element sets as is done upon insertion.
+- Upon node deletion/failure, its element-set is divvied up and merged into its neighbors' core element-sets.  When deletion/failure occurs, the neighbors must also share their element sets as is done upon insertion.
     - This "divvying" is done by splitting the set along the new hash-table bounds. Note that each node already retains the full element set... it must now mark those elements within its partition block as part of its element-set and move those which are not into the appropriate neighbors replicant-set.
 
 - Thus the only times when an element is deleted are upon node insertion or an explicit delete call.
@@ -24,13 +24,13 @@ segmented node-network with n partitions.
 
 - To prevent multi-insertion issues, require node to update "inserter" upon completing each initialization phase.
 
-- Considering the inherently single-core design of TurnTable, allow multiple nodes to run from the same hose.
+- Considering the inherently single-core design of TurnTable, allow multiple nodes to run from the same host.
     - This implies that a node should be able to "insert" a node on the same host by effectively forking
     - Allow node to run in non-storage mode.  Then each server can run a non-storage node independently of the ring which has a potentially current routing table. Allowing "passive" nodes to be "insertion-brokers".
 
 - At some point "effective replicants" should be a TurnTable param. E.G. one should be able to choose the number of copies a given element-set should have.
 
-- Potentially have replicants be an element level parameter?  This would allow for prioritizing some data as more durable/important (increasing fault tolerance for those subsets without decreases general replicant performance)
+- Potentially have replicants be an element level parameter?  This would allow for prioritizing some data as more durable/important (increasing fault tolerance for those subsets without decreasing general replicant performance)
 
 - To further decrease issues with the "multi-insertion" problem, only allow neighbor nodes to process insertion requests.  Thus all insertions are forwarded to the neighbors of the desired insertion location.  Original requester should be informed of node creation stages as they occur to put a set of checks on insertion.  This would allow for a failed insertion on the neighbor level to be caught by the original inserter.
 
@@ -41,10 +41,11 @@ segmented node-network with n partitions.
 
 - Insertion of a node must wait for prior insertions in that location to complete (both neighbors must be "current").
 
-- At some point, a pluggable backend store would be preferable.  Then on could swap in, say, PostgreSQL and link multiple local nodes to the same store (would likely increase local node performance) or link each node to a redis instance... there are a decent number of interesting things TurnTable could do with a pluggable backend.
+- At some point, a pluggable backend store would be preferable.  Then one could swap in, say, PostgreSQL and link multiple local nodes to the same store (would likely increase local node performance) or link each node to a redis instance... there are a decent number of interesting things TurnTable could do with a pluggable backend.
 
 - Populating a newly inserted node should only require that node to pull data from replicants (instead of replicants pushing).  This requires some bulk GET facility w/ a robust mechanism of acquiring incremental partial results (pages).
 
 - Should a new node inform an "old" replicant upon successful insertion of a given element?  Maybe... though it would definitely increase traffic.
 
-- Upon receipt of GET for non-local data, node may ask any known replicants for than data (they don't have to GET from the core node for that element).
+- Upon receipt of GET for non-local data, node may ask any known replicants for that data (they don't have to GET from the core node for that element).
+    - Random selection from known pool of replicants could evenly distribute the load on those nodes... note that without further constraints that the left/right neighbor share, there are only three locations for a given element.

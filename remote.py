@@ -34,6 +34,6 @@ def delete(key):
 
 def retag(key, tag):
     """
-    Retag element remote node
+    Retag element in remote node
     """
     _unimplemented(__name__)
