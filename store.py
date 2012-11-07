@@ -26,8 +26,8 @@ class AbstractLocalStore(object):
             KeyError: If key not present in table.
 
         Returns:
-            (2-tuple) The information stored at this key. The first element is the
-            value, the second is the tag.
+            (2-tuple) The information stored at this key. The first element is
+            the value, the second is the tag.
         """
         _unimplemented(__name__)
 
