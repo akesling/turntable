@@ -166,9 +166,10 @@ class AbstractRoutingTable(object):
             The routing address where this key is stored or None if this key
             isn't stored in the table.
         """
-        hsh, part = keys.get_hash(key, total_nodes())
+        num_nodes = total_nodes()
+        hsh, part = keys.get_hash(key, num_nodes)
 
-        return self.get_route((1, part))
+        return self.get_route(keys.calc_index(part, num_nodes))
 
     def get_route(self, index):
         """Get the routing address for a given index.

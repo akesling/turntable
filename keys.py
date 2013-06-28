@@ -22,7 +22,7 @@ def hash_key(key, partitions=0, hasher=hashlib.sha512):
 
     part = long(partitions)
     if part > 0:
-        part = int(val, 16) % part
+        part = long(val, 16) % part
 
     return (val, part)
 
