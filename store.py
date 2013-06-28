@@ -20,7 +20,7 @@ class AbstractLocalStore(object):
 
         Args:
             key: The key we would like to retrieve.
-            hsh: Whether the key is already the desired hash
+            hsh: Whether the key is already the desired hash.
 
         Raises:
             KeyError: If key not present in table.
@@ -36,10 +36,10 @@ class AbstractLocalStore(object):
         """ Store element locally
 
         Args:
-            key: The key we would like to retrieve.
+            key: The key at which we would like to store the new value.
             value: Whatever value is being stored.
-            hsh: Whether the key is already the desired hash
-            tag: A tag storing some metadata about the value
+            hsh: Whether the key is already the desired hash.
+            tag: A tag storing some metadata about the value.
 
         Returns:
             The key's hash
@@ -52,8 +52,8 @@ class AbstractLocalStore(object):
         Args:
             key: The key we would like to retrieve.
             value: Whatever value is being stored.
-            hsh: Whether the key is already the desired hash
-            tag: A tag storing some metadata about the value
+            hsh: Whether the key is already the desired hash.
+            tag: A tag storing some metadata about the value.
 
         Returns:
             The key's hash
@@ -72,8 +72,8 @@ class AbstractLocalStore(object):
             KeyError: If key not present in table.
 
         Returns:
-            (2-tuple) The information stored at this key. The first element is the
-            value, the second is the tag.
+            (2-tuple) The information stored at this key. The first element is
+            the value, the second is the tag.
         """
         _unimplemented(__name__)
 
@@ -100,26 +100,26 @@ class DictionaryStore(AbstractLocalStore):
     store_lock = Lock()
 
     @staticmethod
-    def dict_lock(function):
+    def _dict_lock(function):
         def wrapper(args*, kwargs**):
             with store_lock:
                 return function(args*, kwargs**)
         return wrapper
 
-    @dict_lock
+    @_dict_lock
     def retrieve(self, key, hsh=False):
         if not hsh:
             key, part = keys.hash_key(key)
         return store[key]
 
-    @dict_lock
+    @_dict_lock
     def store(self, key, value, tag, hsh=False):
         if not hsh:
             key, part = keys.hash_key(key)
         store[key] = [value, tag]
         return key
 
-    @dict_lock
+    @_dict_lock
     def delete(self, key, hsh=False):
         if not hsh:
             key, part = keys.hash_key(key)
@@ -127,7 +127,7 @@ class DictionaryStore(AbstractLocalStore):
         del store[key]
         return result
 
-    @dict_lock
+    @_dict_lock
     def retag(self, key, tag, hsh=False):
         if not hsh:
             key, part = keys.hash_key(key)
