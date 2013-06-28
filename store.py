@@ -15,12 +15,11 @@ from errors import *
 ###############################################################################
 
 class AbstractLocalStore(object):
-    def retrieve(self, key, hsh=False):
+    def retrieve(self, key):
         """Retrieve element value from local store
 
         Args:
             key: The key we would like to retrieve.
-            hsh: Whether the key is already the desired hash.
 
         Raises:
             KeyError: If key not present in table.
@@ -31,42 +30,24 @@ class AbstractLocalStore(object):
         """
         _unimplemented(__name__)
 
-    @dict_lock
-    def store(self, key, value, tag, hsh=False):
-        """ Store element locally
-
-        Args:
-            key: The key at which we would like to store the new value.
-            value: Whatever value is being stored.
-            hsh: Whether the key is already the desired hash.
-            tag: A tag storing some metadata about the value.
-
-        Returns:
-            The key's hash
-        """
-        _unimplemented(__name__)
-
-    def store(self, key, value, tag, hsh=False):
+    def store(self, key, value, tag):
         """ Store element locally
 
         Args:
             key: The key we would like to retrieve.
             value: Whatever value is being stored.
-            hsh: Whether the key is already the desired hash.
             tag: A tag storing some metadata about the value.
 
         Returns:
-            The key's hash
+            The key
         """
         _unimplemented(__name__)
 
-    @dict_lock
-    def delete(self, key, hsh=False):
+    def delete(self, key):
         """Delete element from local store
 
         Args:
             key: The key we would like to delete.
-            hsh: Whether the key is already the desired hash.
 
         Raises:
             KeyError: If key not present in table.
@@ -77,17 +58,15 @@ class AbstractLocalStore(object):
         """
         _unimplemented(__name__)
 
-    @dict_lock
-    def retag(self, key, tag, hsh=False):
+    def retag(self, key, tag):
         """Retag element in local store
 
         Args:
             key: The key we would like to retag.
-            hsh: Whether the key is already the desired hash
             tag: A tag storing some metadata about the value
 
         Returns:
-            The key's hash
+            The key
 
         Raises:
             KeyError: If key not present in table.
@@ -107,32 +86,35 @@ class DictionaryStore(AbstractLocalStore):
         return wrapper
 
     @_dict_lock
-    def retrieve(self, key, hsh=False):
-        if not hsh:
-            key, part = keys.hash_key(key)
-        return store[key]
+    def retrieve(self, key):
+        if key in store:
+            return store[key]
+        else:
+            raise KeyError(key)
 
     @_dict_lock
-    def store(self, key, value, tag, hsh=False):
-        if not hsh:
-            key, part = keys.hash_key(key)
+    def store(self, key, value, tag):
         store[key] = [value, tag]
         return key
 
     @_dict_lock
-    def delete(self, key, hsh=False):
-        if not hsh:
-            key, part = keys.hash_key(key)
-        result = store[key]
-        del store[key]
-        return result
+    def delete(self, key):
+        if key in store:
+            result = store[key]
+            del store[key]
+            return result
+        else:
+            raise KeyError(key)
 
     @_dict_lock
-    def retag(self, key, tag, hsh=False):
+    def retag(self, key, tag):
         if not hsh:
             key, part = keys.hash_key(key)
-        store[key][1] = tag
-        return key
+        if key in store:
+            store[key][1] = tag
+            return key
+        else:
+            raise KeyError(key)
 
 ###############################################################################
 ## Routing table management ###################################################
@@ -174,23 +156,17 @@ class AbstractRoutingTable(object):
 
     ## General Table ##########################################################
 
-    def find_route(self, key, partition=1, hsh=False):
-        """Look up a routing index by key/hash.
+    def find_route(self, key):
+        """Look up a routing index by key.
 
         Args:
             key: The key we are looking up.
-            partition: (long) The number of segments in the table.
-            hsh: (bool) Is the key passed in already hashed?
 
         Returns:
             The routing address where this key is stored or None if this key
             isn't stored in the table.
         """
-        if not hsh:
-            hsh, part = keys.get_hash(key, total_nodes())
-        else:
-            hsh = key
-            part = partition
+        hsh, part = keys.get_hash(key, total_nodes())
 
         return self.get_route((1, part))
 
@@ -230,8 +206,7 @@ class AbstractRoutingTable(object):
             index: The index for the node to remove.
 
         Returns:
-            The address of the index removed if it existed, None if it didn't,
-            and False if the operation failed.
+            The address of the index removed if it existed, None if it didn't.
         """
         _unimplemented(__name__)
 
